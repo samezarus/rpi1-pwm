@@ -1,8 +1,6 @@
-# RPi.GPIO
+RPi.GPIO
 
 # fastapi 
 # uvicorn
 
 flask
-flask-admin 
-flask-sqlalchemy
