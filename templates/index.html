@@ -2,11 +2,47 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Привет, Flask!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ Панель</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Добро пожаловать на мою первую страницу Flask!</h1>
-    <p>Это простая веб-страница созданная с помощью Flask.</p>
-    <p>Здравствуйте, {{ name }}!</p>
+    <div class="container">
+        <aside class="sidebar">
+            <ul>
+
+                <li><a href="#" data-target="home">Главная</a></li>
+
+                <li><a href="#" data-target="settings">Настройка PWM</a></li>
+
+                <li><a href="#" data-target="about">О проекте</a></li>
+                
+            </ul>
+        </aside>
+        <main class="content">
+
+            <div id="home" class="active">
+                <h2>Главная</h2>
+                <p>Добро пожаловать на главную страницу админ-панели.</p>
+            </div>
+
+            <div id="settings">
+                <h2>Настройка PWM</h2>
+                <form id="pwmForm">
+                    <label for="dutyCycle">Сигнал импульсной модуляции (%):</label>
+                    <input type="number" id="dutyCycle" name="dutyCycle" min="0" max="100" required><br><br>
+
+                    <button type="submit">Сохранить</button>
+                </form>
+            </div>
+
+            <div id="about">
+                <h2>О проекте</h2>
+                <p>Это раздел, где вы можете узнать больше о нашем проекте.</p>
+            </div>
+
+        </main>
+    </div>
+    <script src="/static/script.js"></script>
 </body>
 </html>
