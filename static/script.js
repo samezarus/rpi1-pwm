@@ -21,13 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
     pwmForm.addEventListener('submit', function(event) {
         event.preventDefault();
 
-        const dutyCycle = document.getElementById('dutyCycle').value;
+        const pwmValue = document.getElementById('pwmValue').value;
 
         const data = {
-            dutyCycle: parseFloat(dutyCycle)
+            pwm_value: parseInt(pwmValue)
         };
 
-        fetch('/api/rpi/pwm1', {
+        fetch('/api/rpi/gpio/pwm/pin18', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -36,11 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(result => {
-            if (result.success) {
-                alert('Настройки PWM успешно сохранены!');
-            } else {
-                alert('Ошибка при сохранении настроек PWM.');
-            }
+            alert('Настройки PWM успешно сохранены!');
         })
         .catch(error => {
             console.error('Произошла ошибка:', error);

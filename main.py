@@ -1,80 +1,68 @@
-from fastapi import FastAPI, HTTPException, Header
-from functools import wraps
+try: import RPi.GPIO as GPIO
+except: pass
 
-import RPi.GPIO as GPIO
-from time import sleep
-
-app = FastAPI()
-
-TOKENS=["12345"]
-
-# Пример базовых данных для демонстрации
-info_store = {"data": "test"}
+from flask import Flask, jsonify, request, render_template
 
 
-def validate_token(func):
-    @wraps(func)
-    async def wrapper(*args, **kwargs):
-        authorization: str = kwargs.pop('authorization', None)
+# Пин PWM
+PWM_PIN=18
 
-        if not authorization or "Bearer" not in authorization:
-            raise HTTPException(status_code=401, detail="Authorization header missing or invalid")
+# Частота PWM (Гц)
+PWM_FREQ=1000
 
-        # Пример проверки токена. Здесь можно подключиться к сервису аутентификации.
-        # token = authorization.replace("Bearer ", "")
-        
-        if token in TOKENS:
-            return await func(*args, **kwargs)
-        else:
-            raise HTTPException(status_code=401, detail="Invalid token")
-    return wrapper
+# % мощности PWM (от 0% до 100%)
+PWM_VALUE=5
 
 
-@app.get("/get_info")
-# @validate_token
-async def get_info():
-    """
-    Получение информации. Проверяет наличие заголовка авторизации.
-    
-    :return: Словарь с информацией, если все верно
-    """
+app = Flask(__name__)
 
-    return {"info": info_store}
 
-@app.post("/set_info")
-# @validate_token
-async def set_info(info: dict):
-    """
-    Установка информации. Проверяет наличие заголовка авторизации.
-    
-    :param info: Информация для установки
-    :return: Статус обновления информации
-    """
-    
-    temp_val = info.get("temp_val")
-
-    if temp_val:
-        if type(temp_val) == int:
-            pwm.ChangeDutyCycle(temp_val)
-            print("set:", temp_val)
-            
-
-    return {"status": "success", "info_stored": info}
-
-# Запуск приложения
-if __name__ == "__main__":
-    import uvicorn
-
-    # Настройка режима нумерации пинов
+def init_gpio():
+     # Настройка режима нумерации пинов
     GPIO.setmode(GPIO.BCM)
 
-    # Выбор пина и его настройка в качестве вывода
-    pin = 18
-    GPIO.setup(pin, GPIO.OUT)
+    # Настройка PWM в качестве вывода
+    GPIO.setup(PWM_PIN, GPIO.OUT)
 
-    # Создание объекта PWM с частотой 1000 Гц
-    pwm = GPIO.PWM(pin, 1000)
+    # Создание объекта PWM с частотой
+    pwm = GPIO.PWM(PWM_PIN, PWM_FREQ)
 
-    pwm.start(10)  # Выставляем % мощности (от 0% до 100%)
+    # Выставляем % мощности PWM
+    pwm.start(PWM_VALUE)  
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+def set_value_gpio_pwm_pin18(val: int):
+    if val > 0:
+        pwm.ChangeDutyCycle(val)
+
+@app.route("/")
+def home():
+    return render_template("index.html", pwm_value=PWM_VALUE)
+
+
+@app.route("/api/rpi/gpio/pwm/pin18", methods=["POST"])
+def set_rpi_gpio_pwm_pin18():
+    data = request.get_json()
+
+    pwm_value = data.get("pwm_value")
+    temp_value = data.get("temp_value")
+    
+    if pwm_value:
+        PWM_VALUE = pwm_value
+        
+        try: set_value_gpio_pwm_pin18(PWM_VALUE)
+        except: pass
+
+        return jsonify({"status": "ok"}), 201
+    
+    if temp_value:
+        pass
+    
+    return jsonify({"status": "error"}), 500
+
+
+# Запуск сервера
+if __name__ == '__main__':
+    try: init_gpio()
+    except: pass
+
+    app.run(debug=True, host='0.0.0.0')
