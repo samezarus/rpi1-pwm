@@ -1,38 +1,40 @@
-try: import RPi.GPIO as GPIO
-except: pass
+"""
+
+Обязяательно запускать через:
+
+    gunicorn --bind 0.0.0.0:5000 main:app
+
+"""
+
+import RPi.GPIO as GPIO
 
 from flask import Flask, jsonify, request, render_template
-
-
-# Пин PWM
-PWM_PIN=18
-
-# Частота PWM (Гц)
-PWM_FREQ=1000
-
-# % мощности PWM (от 0% до 100%)
-PWM_VALUE=5
 
 
 app = Flask(__name__)
 
 
-def init_gpio():
-     # Настройка режима нумерации пинов
-    GPIO.setmode(GPIO.BCM)
+# Пин PWM
+PWM_PIN = 18
 
-    # Настройка PWM в качестве вывода
-    GPIO.setup(PWM_PIN, GPIO.OUT)
+# Частота PWM (Гц)
+PWM_FREQ = 1000
 
-    # Создание объекта PWM с частотой
-    pwm = GPIO.PWM(PWM_PIN, PWM_FREQ)
+# % мощности PWM (от 0% до 100%)
+PWM_VALUE = 5
 
-    # Выставляем % мощности PWM
-    pwm.start(PWM_VALUE)  
+# Настройка режима нумерации пинов
+GPIO.setmode(GPIO.BCM)
 
-def set_value_gpio_pwm_pin18(val: int):
-    if val > 0:
-        pwm.ChangeDutyCycle(val)
+# Настройка PWM в качестве вывода
+GPIO.setup(PWM_PIN, GPIO.OUT)
+
+# Создание объекта PWM с частотой
+pwm = GPIO.PWM(PWM_PIN, PWM_FREQ)
+
+# Выставляем % мощности PWM
+pwm.start(PWM_VALUE)
+
 
 @app.route("/")
 def home():
@@ -44,25 +46,20 @@ def set_rpi_gpio_pwm_pin18():
     data = request.get_json()
 
     pwm_value = data.get("pwm_value")
-    temp_value = data.get("temp_value")
     
     if pwm_value:
+        global PWM_VALUE
         PWM_VALUE = pwm_value
         
-        try: set_value_gpio_pwm_pin18(PWM_VALUE)
-        except: pass
+        pwm.ChangeDutyCycle(PWM_VALUE)
 
         return jsonify({"status": "ok"}), 201
-    
-    if temp_value:
-        pass
-    
+        
     return jsonify({"status": "error"}), 500
 
 
 # Запуск сервера
 if __name__ == '__main__':
-    try: init_gpio()
-    except: pass
+    # app.run(debug=True, host='0.0.0.0')
 
-    app.run(debug=True, host='0.0.0.0')
+    pass

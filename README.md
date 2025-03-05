@@ -33,7 +33,7 @@ source ./venv/bin/activate
 pip install -r ./requirements.txt
 ```
 
-## Выставляем обороты
+## Выставляем обороты (fastapi)
 
 ``` bash
 curl --header "Content-Type: application/json" \
@@ -41,3 +41,7 @@ curl --header "Content-Type: application/json" \
 --data '{"temp_val":15}' \
 http://192.168.2.229:8000/set_info
 ```
+
+## Выставляем обороты (flask)
+
+http://192.168.2.229:5000/

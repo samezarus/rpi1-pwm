@@ -1,3 +1,7 @@
+"""
+curl --header "Content-Type: application/json" -X POST --data '{"temp_val":15}' http://192.168.2.229:8000/set_info
+"""
+
 from fastapi import FastAPI, HTTPException, Header
 from functools import wraps
 
