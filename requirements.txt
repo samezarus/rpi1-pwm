@@ -3,4 +3,5 @@ RPi.GPIO
 # fastapi 
 # uvicorn
 
+gunicorn
 flask
