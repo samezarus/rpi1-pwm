@@ -2,13 +2,16 @@
 
 # chmod +x nv_temp
 
-api_url="http://192.168.2.229:5000//api/rpi/gpio/pwm/pin18"
+# Скрипт для cron, который регулирует обороты в зависимости от температуры карт
+
+api_url="http://192.168.2.229:5000/api/rpi/gpio/pwm/pin18"
 
 # Получаем температуры всех GPU и сохраняем их в переменную.
 temperatures=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits)
 
 # Инициализируем переменную для хранения максимальной температуры.
 max_temp=-1
+
 
 # Проходим по каждой строке (температура каждого GPU) и находим максимум.
 for temp in $temperatures; do
@@ -37,3 +40,4 @@ else
     echo "ALARM !!!"
     curl --header "Content-Type: application/json" -X POST --data '{"pwm_value": 100}' $api_url
 fi
+

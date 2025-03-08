@@ -4,7 +4,7 @@
 
     gunicorn --bind 0.0.0.0:5000 main:app
 
-curl --header "Content-Type: application/json" -X POST --data '{"pwm_value":50}' http://192.168.2.229:5000//api/rpi/gpio/pwm/pin18
+curl --header "Content-Type: application/json" -X POST --data '{"pwm_value":50}' http://192.168.2.229:5000/api/rpi/gpio/pwm/pin18
 
 """
 
