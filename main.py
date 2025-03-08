@@ -23,7 +23,7 @@ PWM_PIN = 18
 PWM_FREQ = 1000
 
 # % мощности PWM (от 0% до 100%)
-PWM_VALUE = 5
+PWM_VALUE = 0
 
 # Настройка режима нумерации пинов
 GPIO.setmode(GPIO.BCM)
