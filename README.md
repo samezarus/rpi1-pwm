@@ -45,3 +45,51 @@ http://192.168.2.229:8000/set_info
 ## Выставляем обороты (flask) (gunicorn --bind 0.0.0.0:5000 main:app)
 
 http://192.168.2.229:5000/
+
+## Создание демона (под sudo)
+
+1. Создать файл:
+
+``` bash
+> /etc/systemd/system/pwm.service
+```
+
+2. Тело файла
+
+``` code
+[Unit]
+Description=PWM demon
+After=network.target
+
+[Service]
+User=<USER>
+WorkingDirectory=/home/<USER>/project/
+ExecStart=/home/<USER>/project/venv/bin/gunicorn --bind 0.0.0.0:5000 main:app
+Restart=always
+[Install]
+WantedBy=multi-user.target
+```
+
+3. Применить изменения
+
+``` bash
+sudo systemctl daemon-reload
+```
+
+4. Автостарт
+
+``` bash
+sudo systemctl enable pwm.service
+```
+
+5. Запуск
+
+``` bash
+sudo systemctl start pwm.service
+```
+
+6. Проверка статуса
+
+``` bash
+sudo systemctl status pwm.service
+```
